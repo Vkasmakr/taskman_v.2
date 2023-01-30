@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+
 {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
 <h1>Assign and Manage projects</h1>
-<p style="color:green">All current incomplete projects assigned to <em>{{current_employee.group_id.name}}:</em> </p>
+<p style="color:green">All completed projects assigned to <em>{{current_employee.group_id.name}}:</em> </p>
 {% for project_obj in project_list %}
-<li> <a href="{{project_obj.id}}">{{project_obj.title}}</a> <br> Created on: {{project_obj.created_on}} <br> Deadline on: {{project_obj.enddate}}
+{{project_obj.pk}}
+<li> <a href="{% url 'project-detail' pk=project_obj.pk %}">{{project_obj.title}}</a> <br> Created on: {{project_obj.created_on}} <br> Deadline on: {{project_obj.enddate}}
     <br> Assigned to Team: {{project_obj.group_id}}
 </li>
 <p></p>

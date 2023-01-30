@@ -44,11 +44,11 @@ Reverse for 'view-project' with keyword arguments '{'id': 2}' not found. 1 patte
 ['taskman/projects/(?P<pk>[0-9]+)/\\Z']
 -->
 {% if project.completed_on == False %}
-<form method="POST" action="{% url 'view-project' project.id %}">
+<form method="POST" action="{% url 'complete-project' project.pk %}">
   {% csrf_token %}
   <button type="submit" class="button-cool">Mark as Completed</button>
 </form>
-{%end if%}
+{%endif%}
 
 <hr>
 {% if user.is_authenticated %}

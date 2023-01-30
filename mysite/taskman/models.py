@@ -14,8 +14,7 @@ class Project(models.Model):
     enddate = models.DateTimeField('Requested finish date', null=True, blank=True)
     created_on = models.DateTimeField(editable=False, auto_now_add=True)
     updated_on = models.DateTimeField(editable=False, auto_now_add=True)
-    completed_on = models.BooleanField('Completed', default=False)  # completed_on skirtas nustatyti ar projektas baigtas
-    # default=False, reiskia, kad nera baigtas
+    completed_on = models.BooleanField('Completed', default=False)
 
     def __str__(self):
         return self.title

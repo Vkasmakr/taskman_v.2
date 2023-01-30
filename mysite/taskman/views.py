@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Project, Employee, TaskInstance
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import FormMixin, CreateView
+from django.views.generic.edit import FormMixin, CreateView, UpdateView, DeleteView
 from .forms import TaskCommentForm, ProjectCommentForm, TaskCreateForm, ProjectCreateForm
 from django.shortcuts import get_object_or_404
 
@@ -22,7 +22,8 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
-        return TaskInstance.objects.filter(assign_employees__user=self.request.user).filter(project_id__completed_on=False)\
+        return TaskInstance.objects.filter(assign_employees__user=self.request.user).filter(
+            project_id__completed_on=False) \
             .filter(completed_on=False)
 
 
@@ -105,7 +106,7 @@ class AllTaskListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         current_employee = Employee.objects.get(user=self.request.user)
-        task_list = TaskInstance.objects.filter(project_id__group_id__id=current_employee.group_id.id).filter\
+        task_list = TaskInstance.objects.filter(project_id__group_id__id=current_employee.group_id.id).filter \
             (project_id__completed_on=False).filter(completed_on=False)
         return task_list
 
@@ -123,7 +124,7 @@ class AllTaskCListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         current_employee = Employee.objects.get(user=self.request.user)
-        task_list = TaskInstance.objects.filter(project_id__group_id__id=current_employee.group_id.id)\
+        task_list = TaskInstance.objects.filter(project_id__group_id__id=current_employee.group_id.id) \
             .filter(completed_on=True)
         return task_list
 
@@ -162,7 +163,6 @@ class ProjectDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
 
 class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
     model = TaskInstance
-    # fields = ('project_id', 'job_title', 'description', 'enddate', 'assign_employees')
     success_url = '/taskman/alltasks/'
     template_name = 'task_create_form.html'
     form_class = TaskCreateForm
@@ -179,6 +179,38 @@ class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
         group = project.group_id
         form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
         return super().form_valid(form)
+
+
+class TaskInstanceUpdateView(LoginRequiredMixin, UpdateView):
+    model = TaskInstance
+    fields = ('project_id', 'job_title', 'description', 'enddate', 'assign_employees')
+    success_url = '/taskman/alltasks/'
+    template_name = 'task_create_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_employee = Employee.objects.get(user=self.request.user)
+        context['current_employee'] = current_employee
+        return context
+
+    def form_valid(self, form):
+        form.instance.assign_employees = Employee.objects.get(user=self.request.user)
+        project = form.cleaned_data['project_id']
+        group = project.group_id
+        form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
+        return super().form_valid(form)
+
+
+class TaskInstanceDeleteView(LoginRequiredMixin, DeleteView):
+    model = TaskInstance
+    success_url = "/taskman/alltasks/"
+    template_name = 'task_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_employee = Employee.objects.get(user=self.request.user)
+        context['current_employee'] = current_employee
+        return context
 
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
@@ -207,16 +239,24 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
-# Cia yra funkcija, kuri isfilturoja atitinkamo projecto completed_on lauka ir ja suvykdzius, pakeicia statusa i True
 def project_done(request, pk):
     project = Project.objects.get(id=pk)
     if request.method == 'POST':
         project.completed_on = True
         project.save()
-        return redirect('view-project', id=pk)
+        return redirect('project-detail', pk=pk)
 
     return render(request, 'project_detail.html', {'project': project})
 
+
+def task_done(request, pk):
+    task = TaskInstance.objects.get(id=pk)
+    if request.method == 'POST':
+        task.completed_on = True
+        task.save()
+        return redirect('task-detail', pk=pk)
+
+    return render(request, 'task_detail.html', {'task': task})
 
 # Employee profile:
 @login_required

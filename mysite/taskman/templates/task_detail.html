@@ -20,15 +20,17 @@
 
 {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
 <p>
-    <a class="button-cool" href="">Update Task</a>
+    <a class="button-cool" href="{% url 'task-update' taskinstance.pk %}">Update Task</a>
     <a class="button-cool" href="">Delete Task</a>
 </p>
 {%endif%}
 
-<form method="POST" action="">
+{% if taskinstance.completed_on == False %}
+<form method="POST" action="{% url 'complete-task' taskinstance.pk %}">
   {% csrf_token %}
   <button type="submit" class="button-cool">Mark as Completed</button>
 </form>
+{%endif%}
 
 <hr>
 {% if user.is_authenticated %}
