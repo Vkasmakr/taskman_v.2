@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('employee/', views.employee, name='employee'),
+    path('myteam/', views.MyTeamListView.as_view(), name='my-team'),
 
     path('tasks/', views.TaskListView.as_view(), name='tasks_name'),
     path('tasks/<int:pk>', views.TaskDetailView.as_view(), name='task-detail'),
@@ -11,6 +12,7 @@ urlpatterns = [
     path('alltasksc/', views.AllTaskCListView.as_view(), name='all_tasks_c'),
     path('alltasks/<int:pk>/done', views.task_done, name='complete-task'),
     path('alltasks/<int:pk>/open', views.task_open, name='open-task'),
+    path('alltasks/<int:pk>/delete', views.TaskInstanceDeleteView.as_view(), name='delete-task'),
 
     path('accounts/', include('django.contrib.auth.urls')),
 

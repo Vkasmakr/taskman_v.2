@@ -58,7 +58,7 @@ Reverse for 'view-project' with keyword arguments '{'id': 2}' not found. 1 patte
 <hr>
 {% if user.is_authenticated %}
 <div class="fieldWrapper">
-    <h4>Comment task:</h4>
+    <h4>Comment project:</h4>
     <form action="" method="post">
         {% csrf_token %}
         {{ form.content }}
@@ -77,7 +77,7 @@ Reverse for 'view-project' with keyword arguments '{'id': 2}' not found. 1 patte
 <p>{{project_com.content}}</p>
 {% endfor %}
 {% else %}
-<p>No comments for the task</p>
+<p>No comments for the project</p>
 {% endif %}
 
 {%else%}

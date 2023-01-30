@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group, User
 from PIL import Image
 from django.urls import reverse
 from django.core.validators import MaxValueValidator
+from datetime import date
 
 
 # Creating a task model:
@@ -39,7 +40,6 @@ class Employee(models.Model):
     team_role = models.ForeignKey(TeamRole, help_text='Assign a position', on_delete=models.SET_NULL, null=True, blank=True)
     task_number = models.IntegerField('Number of tasks assigned', default=0, validators=[MaxValueValidator(10)])
 
-
     def __str__(self):
         return f"Username: {self.user.username}\n / Team: {self.group_id.name} \n / Position: {self.team_role.name}"
 
@@ -67,10 +67,12 @@ class TaskInstance(models.Model):
     def absolute_url(self):
         return reverse('task-detail', args=[str(self.id)])
 
-
-# class EmployeeWork(models.Model):
-#     employee = models.OneToOneField(Employee, on_delete=models.CASCADE)  # suristi darbuotoja su Employee modeliu
-#     task_number = models.IntegerField('Number of tasks assigned', default=0, validators=[MaxValueValidator(10)])
+    @property
+    def is_overdue(self):
+        if self.enddate and date.today() > self.enddate:
+            return True
+        else:
+            return False
 
 
 class TaskComment(models.Model):

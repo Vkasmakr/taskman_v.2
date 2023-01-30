@@ -37,7 +37,7 @@
         {% if user.is_authenticated%}
           <ul>
             <li><a href="{% url 'tasks_name' %}" class="button-43">My tasks</a></li>
-            <li><a href="{% url 'tasks_name' %}" class="button-43">My Team</a></li>
+            <li><a href="{% url 'my-team' %}" class="button-43">My Team</a></li>
                 {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead' or current_employee.team_role.name == 'Senior' %}
                 <li><a href="{% url 'all_tasks' %}" class="button-43">Task Management</a></li>
                 {% endif %}

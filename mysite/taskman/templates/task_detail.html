@@ -21,7 +21,7 @@
 {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
 <p>
     <a class="button-cool" href="{% url 'task-update' taskinstance.pk %}">Update Task</a>
-    <a class="button-cool" href="">Delete Task</a>
+    <a class="button-cool" href="{% url 'delete-task' taskinstance.pk %}">Delete Task</a>
 </p>
 {%endif%}
 

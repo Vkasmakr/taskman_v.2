@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>My Team</h1>
+<p style="color:green">Team members of <em>{{current_employee.group_id.name}}:</em> </p>
+{% for employee in employee_list %}
+<li> Username: {{employee.user.username}}
+    <br> Postion: {{employee.team_role}}
+    <br> Number of tasks assigned to this date: {{employee.task_number}}
+    <br> Number of tasks with missed deadline: {{employee.overdue_task_count}}
+</li>
+<p></p>
+{% endfor %}
+{% if employee_list.count == 0 %}
+<h3>There are team members in {{current_employee.group_id.name}}</h3>
+{% endif %}
+
+<hr>
+<div class="pagination"><span class="step-links">>
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a><a href="?page={{ page_obj.previous_page_number }}"> Back </a>
+        {% endif %}
+        <span class="current">
+            {{ page_obj.number }} out of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Next </a><a href="?page={{ page_obj.paginator.num_pages }}"> Last &raquo;</a>
+        {% endif %}
+    </span></div>
+
+{% endblock %}
