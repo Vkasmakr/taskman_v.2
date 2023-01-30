@@ -249,10 +249,30 @@ def project_done(request, pk):
     return render(request, 'project_detail.html', {'project': project})
 
 
+def project_open(request, pk):
+    project = Project.objects.get(id=pk)
+    if request.method == 'POST':
+        project.completed_on = False
+        project.save()
+        return redirect('project-detail', pk=pk)
+
+    return render(request, 'project_detail.html', {'project': project})
+
+
 def task_done(request, pk):
     task = TaskInstance.objects.get(id=pk)
     if request.method == 'POST':
         task.completed_on = True
+        task.save()
+        return redirect('task-detail', pk=pk)
+
+    return render(request, 'task_detail.html', {'task': task})
+
+
+def task_open(request, pk):
+    task = TaskInstance.objects.get(id=pk)
+    if request.method == 'POST':
+        task.completed_on = False
         task.save()
         return redirect('task-detail', pk=pk)
 

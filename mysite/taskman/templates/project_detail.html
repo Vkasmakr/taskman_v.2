@@ -48,6 +48,11 @@ Reverse for 'view-project' with keyword arguments '{'id': 2}' not found. 1 patte
   {% csrf_token %}
   <button type="submit" class="button-cool">Mark as Completed</button>
 </form>
+{%else%}
+<form method="POST" action="{% url 'open-project' project.pk %}">
+  {% csrf_token %}
+  <button type="submit" class="button-cool">Mark as Open</button>
+</form>
 {%endif%}
 
 <hr>

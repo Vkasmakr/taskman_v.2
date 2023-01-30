@@ -5,7 +5,6 @@
 <h1>Assign and Manage projects</h1>
 <p style="color:green">All completed projects assigned to <em>{{current_employee.group_id.name}}:</em> </p>
 {% for project_obj in project_list %}
-{{project_obj.pk}}
 <li> <a href="{% url 'project-detail' pk=project_obj.pk %}">{{project_obj.title}}</a> <br> Created on: {{project_obj.created_on}} <br> Deadline on: {{project_obj.enddate}}
     <br> Assigned to Team: {{project_obj.group_id}}
 </li>

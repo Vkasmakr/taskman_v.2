@@ -30,6 +30,11 @@
   {% csrf_token %}
   <button type="submit" class="button-cool">Mark as Completed</button>
 </form>
+{%else%}
+<form method="POST" action="{% url 'open-task' taskinstance.pk %}">
+  {% csrf_token %}
+  <button type="submit" class="button-cool">Mark as Open</button>
+</form>
 {%endif%}
 
 <hr>

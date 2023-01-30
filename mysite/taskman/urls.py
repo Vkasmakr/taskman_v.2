@@ -10,6 +10,7 @@ urlpatterns = [
     path('alltasks/', views.AllTaskListView.as_view(), name='all_tasks'),
     path('alltasksc/', views.AllTaskCListView.as_view(), name='all_tasks_c'),
     path('alltasks/<int:pk>/done', views.task_done, name='complete-task'),
+    path('alltasks/<int:pk>/open', views.task_open, name='open-task'),
 
     path('accounts/', include('django.contrib.auth.urls')),
 
@@ -17,6 +18,7 @@ urlpatterns = [
     path('projectsc/', views.ProjectCListView.as_view(), name='all_projects_c'),
     path('projects/<int:pk>', views.ProjectDetailView.as_view(), name='project-detail'),
     path('projects/<int:pk>/done', views.project_done, name='complete-project'),
+    path('projects/<int:pk>/open', views.project_open, name='open-project'),
 
     path('alltasks/new', views.TaskInstanceCreateView.as_view(), name='task-new'),
     path('projects/new', views.ProjectCreateView.as_view(), name='project-new'),
