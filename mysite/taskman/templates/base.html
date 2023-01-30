@@ -1,0 +1,65 @@
+{% load static %}
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>
+      {% block title %}
+      {{ page_title|default:"TASK MAN" }}
+      {% endblock title %}
+    </title>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="wrapper">
+    <header id="header">
+      <div id="logo"><img src="{% static 'css/logo.png' %}" alt="" width="150" height="150"/></div>
+      <div id="top_menu"><a href="/">Home</a> |
+
+        {% if user.is_authenticated%}
+            <a href="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                </svg>
+                My profile
+            </a>
+              | <a href="{% url 'logout' %}">Log out</a>
+            {% else%}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+          | <a href="{% url 'admin:index' %}">Admin Page</a>
+        </div>
+      <div id="topbanner"><img src="{% static 'css/pexels-pixabay-290595.jpg' %}" alt="" width="800" height="20"/></div>
+    </header>
+      <aside id="rightsidebar">
+      <nav id="nav">
+        {% if user.is_authenticated%}
+          <ul>
+            <li><a href="{% url 'tasks_name' %}" class="button-43">My tasks</a></li>
+            <li><a href="{% url 'tasks_name' %}" class="button-43">My Team</a></li>
+                {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead' or current_employee.team_role.name == 'Senior' %}
+                <li><a href="{% url 'all_tasks' %}" class="button-43">Task Management</a></li>
+                {% endif %}
+
+                {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
+                <li><a href="{% url 'all_projects' %}" class="button-43">Project Management</a></li>
+                {% endif %}
+
+          </ul>
+        {% endif %}
+      </nav>
+    </aside>
+    <section id="main">
+      {% block content %}
+      <p>Placeholder text in base template. Replace with page content.</p>
+      {% endblock content %}
+    </section>
+    <footer id="footer">Copyright &copy;
+      <script type="text/JavaScript">
+      document.write(new Date().getFullYear());
+      </script> TaskMan
+    </footer>
+    </div>
+  </body>
+</html>

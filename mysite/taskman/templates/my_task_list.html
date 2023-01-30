@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tasks</h1>
+<p style="color:green">All current incomplete tasks assigned to <em>{{current_employee.user}}:</em> </p>
+{% for tasks_obj in taskinstance_list %}
+<li> <a href="{{tasks_obj.id}}">{{tasks_obj.job_title}}</a> <br>Project name: {{tasks_obj.project_id.title}} <br> Deadline on:{{tasks_obj.enddate}} </li>
+<p></p>
+{% endfor %}
+{% if taskinstance_list.count == 0 %}
+<h3>You don't have any assigned open tasks</h3>
+{% endif %}
+
+<hr>
+<div class="pagination"><span class="step-links">>
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a><a href="?page={{ page_obj.previous_page_number }}"> Back </a>
+        {% endif %}
+        <span class="current">
+            {{ page_obj.number }} out of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Next </a><a href="?page={{ page_obj.paginator.num_pages }}"> Last &raquo;</a>
+        {% endif %}
+    </span></div>
+
+{% endblock %}

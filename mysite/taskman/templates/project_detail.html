@@ -1,0 +1,71 @@
+<style>
+      .button-cool {
+        display: inline-block;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        color: #ffffff;
+        background-color: #7aa8b7;
+        border-radius: 6px;
+        outline: none;
+      }
+    </style>
+{% extends "base.html" %}
+{% block content %}
+<!-- book atsiranda is BookDetailView-->
+<h1>PROJECT {{project.title}}</h1>
+{% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
+<p><b>Responsible Team: </b> {{project.group_id}}</p>
+<p><b>Project Description:</b> {{project.description}}</p>
+<p><b>Project Deadline: </b>{{project.enddate}}</p>
+<p><b>Required number of staff: </b>{{project.employee_req}} </p>
+<p><b>Completed: </b>
+    {% if project.completed_on == True %}
+    Yes
+    {%else%}
+    No
+    {%endif%}
+</p>
+
+<p>
+    {% if project.completed_on == False %}
+    <a class="button-cool" href="">Create Task for Project</a>
+    {%endif%}
+    <a class="button-cool" href="">Update Project</a>
+    <a class="button-cool" href="">Delete Project</a>
+</p>
+
+<form method="POST" action="{% url 'view-project' project.id %}">
+  {% csrf_token %}
+  <button type="submit" class="button-cool">Mark as Completed</button>
+</form>
+
+<hr>
+{% if user.is_authenticated %}
+<div class="fieldWrapper">
+    <h4>Comment task:</h4>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.content }}
+        <br>
+        <input type="submit", value="Leave Comment">
+    </form>
+</div>
+{% endif %}
+
+<hr>
+<h4>Comments:</h4>
+{% if project.projectcomment_set.all %}
+{% for project_com in project.projectcomment_set.all %}
+<hr>
+<p>{{project_com.user}}, <em>{{project_com.date_created}}</em></p>
+<p>{{project_com.content}}</p>
+{% endfor %}
+{% else %}
+<p>No comments for the task</p>
+{% endif %}
+
+{%else%}
+<p> You do not have permission to view project</p>
+{%endif%}
+{% endblock %}

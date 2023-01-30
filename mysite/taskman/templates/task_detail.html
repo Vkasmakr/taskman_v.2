@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- book atsiranda is BookDetailView-->
+<h1>{{taskinstance.job_title}}</h1>
+{% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
+<p><b>Project name: </b><a href=""> {{taskinstance.project_id.title}}</a></p>
+{%else%}
+<p><b>Project name: </b>{{taskinstance.project_id.title}}</p>
+{%endif%}
+<p><b>Task Description:</b> {{taskinstance.description}}</p>
+<p><b>Task Deadline: </b>{{taskinstance.enddate}}</p>
+<p><b>Assigned Employee: </b>{{taskinstance.assign_employees}}</p>
+<p><b>Completed: </b>
+    {% if taskinstance.completed_on == True %}
+    Yes
+    {%else%}
+    No
+    {%endif%}
+</p>
+
+{% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
+<p>
+    <a class="button-cool" href="">Update Task</a>
+    <a class="button-cool" href="">Delete Task</a>
+</p>
+{%endif%}
+
+<form method="POST" action="">
+  {% csrf_token %}
+  <button type="submit" class="button-cool">Mark as Completed</button>
+</form>
+
+<hr>
+{% if user.is_authenticated %}
+<div class="fieldWrapper">
+    <h4>Comment task:</h4>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.content }}
+        <br>
+        <input type="submit", value="Leave Comment">
+    </form>
+</div>
+{% endif %}
+
+<hr>
+<h4>Comments:</h4>
+{% if taskinstance.taskcomment_set.all %}
+{% for task_com in taskinstance.taskcomment_set.all %}
+<hr>
+<p>{{task_com.user}}, <em>{{task_com.date_created}}</em></p>
+<p>{{task_com.content}}</p>
+{% endfor %}
+{% else %}
+<p>No comments for the task</p>
+{% endif %}
+
+{% endblock %}

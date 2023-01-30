@@ -1,0 +1,43 @@
+<style>
+      .button-cool {
+        display: inline-block;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        color: #ffffff;
+        background-color: #7aa8b7;
+        border-radius: 6px;
+        outline: none;
+      }
+    </style>
+{% extends "base.html" %}
+{% block content %}
+<h1>Tasks</h1>
+<p style="color:green">All completed tasks assigned to <em>{{current_employee.group_id}}:</em> </p>
+{% for tasks_obj in taskinstance_list %}
+<li> <a href="{% url 'task-detail' tasks_obj.id %}">{{tasks_obj.job_title}}</a> <br>Project name: {{tasks_obj.project_id.title}}
+    <br> Deadline on:{{tasks_obj.enddate}} <br>Assigned to User: {{tasks_obj.assign_employees.user.username}}</li>
+<p></p>
+{% endfor %}
+{% if taskinstance_list.count == 0 %}
+<h3>There are no completed tasks from {{current_employee.group_id}}</h3>
+{% endif %}
+
+<hr>
+<div class="pagination"><span class="step-links">>
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a><a href="?page={{ page_obj.previous_page_number }}"> Back </a>
+        {% endif %}
+        <span class="current">
+            {{ page_obj.number }} out of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Next </a><a href="?page={{ page_obj.paginator.num_pages }}"> Last &raquo;</a>
+        {% endif %}
+    </span></div>
+<p></p>
+
+<a class="button-cool" href="{% url 'task-new' %}">Create new task</a>
+<p></p>
+<a class="button-cool" href="{% url 'all_tasks' %}">Show open tasks</a>
+
+{% endblock %}

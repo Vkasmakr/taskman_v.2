@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+{% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
+<h1>Assign and Manage projects</h1>
+<p style="color:green">All current incomplete projects assigned to <em>{{current_employee.group_id.name}}:</em> </p>
+{% for project_obj in project_list %}
+<li> <a href="{{project_obj.id}}">{{project_obj.title}}</a> <br> Created on: {{project_obj.created_on}} <br> Deadline on: {{project_obj.enddate}}
+    <br> Assigned to Team: {{project_obj.group_id}}
+</li>
+<p></p>
+{% endfor %}
+{% if project_list.count == 0 %}
+<h3>There are no completed projects from {{current_employee.group_id.name}}</h3>
+{% endif %}
+
+<hr>
+<div class="pagination"><span class="step-links">>
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a><a href="?page={{ page_obj.previous_page_number }}"> Back </a>
+        {% endif %}
+        <span class="current">
+            {{ page_obj.number }} out of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Next </a><a href="?page={{ page_obj.paginator.num_pages }}"> Last &raquo;</a>
+        {% endif %}
+    </span></div>
+
+<p></p>
+{% if current_employee.team_role.name == 'Manager' %}
+<a class="button-cool" href="{% url 'project-new' %}">Create new project</a>
+{% endif %}
+<p></p>
+<a class="button-cool" href="{% url 'all_projects' %}">Show open projects</a>
+{%else%}
+<h3>You do not have permission to view this page</h3>
+{%endif%}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+{% if user.is_authenticated%}
+<h1>Welcome to Task Man, {{user}}</h1>
+{% else %}
+<h1>Welcome to Task Man, Dear Guest</h1>
+{% endif %}
+<p>Your best work task manager!</p>
+
+{% endblock %}
