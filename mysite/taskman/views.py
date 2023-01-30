@@ -207,6 +207,7 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
+# Cia yra funkcija, kuri isfilturoja atitinkamo projecto completed_on lauka ir ja suvykdzius, pakeicia statusa i True
 def project_done(request, pk):
     project = Project.objects.get(id=pk)
     if request.method == 'POST':
