@@ -21,6 +21,7 @@ class ProjectUpdateForm(forms.ModelForm):
         widgets = {'enddate': DateInput()}
 
 
+# This is a form for TaskInstanceCreateView
 class TaskCreateForm(forms.ModelForm):
     class Meta:
         model = TaskInstance

@@ -218,6 +218,9 @@ class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+        # Sitoje vietoje mano tikslas butu pasiekti tik tuos Employee objektus, kurie yra priskirti tai paciai grupei
+        # kaip ir ta, kuriai priskirtas projektas. Ideja butu - pasirinkti projekta ir tada gauti lista tik su
+        # atitinkamais darbuotojais. Siuo metu gaunu pasirinkti visu Employee
         project = form.cleaned_data['project_id']
         group = project.group_id
         form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
