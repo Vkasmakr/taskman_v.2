@@ -7,6 +7,7 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 
+# This is a form for ProjectCreateView in views.py
 class ProjectCreateForm(forms.ModelForm):
     class Meta:
         model = Project
@@ -14,6 +15,7 @@ class ProjectCreateForm(forms.ModelForm):
         widgets = {'enddate': DateInput()}
 
 
+# This is a form for ProjectUpdateView in views.py
 class ProjectUpdateForm(forms.ModelForm):
     class Meta:
         model = Project
@@ -21,7 +23,7 @@ class ProjectUpdateForm(forms.ModelForm):
         widgets = {'enddate': DateInput()}
 
 
-# This is a form for TaskInstanceCreateView
+# This is a form for TaskInstanceCreateView in views.py
 class TaskCreateForm(forms.ModelForm):
     class Meta:
         model = TaskInstance
@@ -29,6 +31,7 @@ class TaskCreateForm(forms.ModelForm):
         widgets = {'enddate': DateInput()}
 
 
+# This is a form for TaskInstanceUpdateView in views.py
 class TaskUpdateForm(forms.ModelForm):
     class Meta:
         model = TaskInstance
@@ -36,6 +39,7 @@ class TaskUpdateForm(forms.ModelForm):
         widgets = {'enddate': DateInput()}
 
 
+# This is a comment form for TaskDetailView in views.py
 class TaskCommentForm(forms.ModelForm):
     class Meta:
         model = TaskComment
@@ -43,6 +47,7 @@ class TaskCommentForm(forms.ModelForm):
         widgets = {'task': forms.HiddenInput(), 'user': forms.HiddenInput()}
 
 
+# This is a comment form for ProjectDetailView in views.py
 class ProjectCommentForm(forms.ModelForm):
     class Meta:
         model = ProjectComment
@@ -50,6 +55,7 @@ class ProjectCommentForm(forms.ModelForm):
         widgets = {'project': forms.HiddenInput(), 'user': forms.HiddenInput()}
 
 
+# This is a form for employee functions in views.py, used for User class change
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
 
@@ -58,6 +64,7 @@ class UserUpdateForm(forms.ModelForm):
         fields = ('username', 'email')
 
 
+# This is a form for employee functions in views.py, used for Employee class change
 class EmployeeUpdateForm(forms.ModelForm):
     class Meta:
         model = Employee
