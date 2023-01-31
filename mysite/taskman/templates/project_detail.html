@@ -29,7 +29,7 @@
 
 <p>
     {% if project.completed_on == False %}
-    <a class="button-cool" href="">Create Task for Project</a>
+    <a class="button-cool" href="{% url 'task-new' %}">Create Task for Project</a>
     {%endif%}
     <a class="button-cool" href="">Update Project</a>
     <a class="button-cool" href="">Delete Project</a>
