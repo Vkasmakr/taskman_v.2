@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import Project, Employee, TeamRole, TaskInstance
-# from .models import EmployeeWork
 
 
 # Register your models here.
@@ -15,17 +14,10 @@ class ProjectAdmin(admin.ModelAdmin):
     list_editable = ['enddate']
 
 
-# class EmployeeWorkAdmin(admin.TabularInline):
-#     model = EmployeeWork
-#     list_display = ('employee', 'task_number')
-#     list_editable = ['task_number']
-
-
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('user', 'team_role', 'group_id', 'task_number')
     list_filter = ('team_role', 'group_id')
     list_editable = ('team_role', 'group_id')
-    # inlines = [EmployeeWorkAdmin]
 
 
 admin.site.register(Project, ProjectAdmin)

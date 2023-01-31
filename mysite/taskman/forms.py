@@ -1,5 +1,6 @@
-from .models import TaskComment, ProjectComment, TaskInstance, Project
+from .models import TaskComment, ProjectComment, TaskInstance, Project, Employee
 from django import forms
+from django.contrib.auth.models import User
 
 
 class DateInput(forms.DateInput):
@@ -47,3 +48,16 @@ class ProjectCommentForm(forms.ModelForm):
         fields = ('content', 'project', 'user')
         widgets = {'project': forms.HiddenInput(), 'user': forms.HiddenInput()}
 
+
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+
+class EmployeeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['photo']

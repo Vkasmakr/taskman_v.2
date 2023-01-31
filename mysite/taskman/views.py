@@ -5,8 +5,9 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin, CreateView, UpdateView, DeleteView
 from .forms import TaskCommentForm, ProjectCommentForm, TaskCreateForm, ProjectCreateForm, TaskUpdateForm
-from .forms import ProjectUpdateForm
+from .forms import ProjectUpdateForm, UserUpdateForm, EmployeeUpdateForm
 from datetime import datetime
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
 
@@ -199,14 +200,14 @@ class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        assign_employee = form.cleaned_data['assign_employees']  # gets the employee from list
-        form.instance.assign_employees = assign_employee
-
         # Zemiau kodas Neveikia :(
         project = form.cleaned_data['project_id']
         group = project.group_id
         form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
         # Anksciau kodas Neveikia :(
+
+        assign_employee = form.cleaned_data['assign_employees']  # gets the employee from list
+        form.instance.assign_employees = assign_employee
 
         response = super().form_valid(form)
         self.object.assign_employees.task_number += 1
@@ -357,4 +358,25 @@ def task_open(request, pk):
 # Employee profile:
 @login_required
 def employee(request):
-    return render(request, "employee.html")
+    if request.user.is_authenticated:
+        current_employee = Employee.objects.get(user=request.user)
+        context = {'current_employee': current_employee}
+    else:
+        context = {}
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        employee_form = EmployeeUpdateForm(request.POST, request.FILES, instance=request.user.employee)
+        if user_form.is_valid() and employee_form.is_valid():
+            user_form.save()
+            employee_form.save()
+            messages.success(request, "Profile updated successfully")
+            return redirect("employee-page")
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        employee_form = EmployeeUpdateForm(instance=request.user.employee)
+
+    context['user_form'] = user_form
+    context['employee_form'] = employee_form
+
+    return render(request, "employee.html", context=context)
+
