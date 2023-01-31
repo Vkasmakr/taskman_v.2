@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import Group, User
 from PIL import Image
 from django.urls import reverse
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import date
 
 
@@ -11,7 +11,7 @@ class Project(models.Model):
     title = models.CharField('Project title', max_length=100, help_text='Enter project title')
     description = models.TextField('Description', max_length=2000, help_text='Enter project description')
     group_id = models.ForeignKey(Group, help_text='Assign to a team', blank=True, on_delete=models.SET_NULL, null=True)
-    employee_req = models.IntegerField('Number of employees expected', default=0)
+    employee_req = models.IntegerField('Number of employees expected. Min:1', default=0, validators=[MinValueValidator(1)])
     enddate = models.DateTimeField('Requested finish date', null=True, blank=True)
     created_on = models.DateTimeField(editable=False, auto_now_add=True)
     updated_on = models.DateTimeField(editable=False, auto_now_add=True)
@@ -39,7 +39,7 @@ class Employee(models.Model):
     photo = models.ImageField(default='default.png', upload_to='profile_pics')
     team_role = models.ForeignKey(TeamRole, help_text='Assign a position', on_delete=models.SET_NULL, null=True, blank=True)
     # Task number - skirtas skaiciuoti kiek uzduociu dabartiniu metu yra priskirta konkreciam Employee
-    task_number = models.IntegerField('Number of tasks assigned', default=0, validators=[MaxValueValidator(10)])
+    task_number = models.IntegerField('Number of tasks assigned', default=0)
 
     def __str__(self):
         return f"Username: {self.user.username}\n / Team: {self.group_id.name} \n / Position: {self.team_role.name}"
