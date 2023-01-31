@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- book atsiranda is BookDetailView-->
+
 <h1>{{taskinstance.job_title}}</h1>
 {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
 <p><b>Project name: </b><a href=""> {{taskinstance.project_id.title}}</a></p>

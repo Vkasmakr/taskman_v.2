@@ -12,7 +12,7 @@
     </style>
 {% extends "base.html" %}
 {% block content %}
-<!-- book atsiranda is BookDetailView-->
+
 <h1>PROJECT {{project.title}}</h1>
 {% if current_employee.team_role.name == 'Manager' or current_employee.team_role.name == 'Team Lead'%}
 <p><b>Responsible Team: </b> {{project.group_id}}</p>
@@ -35,14 +35,7 @@
     <a class="button-cool" href="{% url 'project-delete' project.pk %}">Delete Project</a>
 </p>
 
-<!-- Cia yra forma, kuri isveda mygtuka, kurio paspaudimu pakeiciame completed_on i True
-Ji paspaudus projekto statusas pasikeicia i True, taciau gaunamas error:
 
-django.urls.exceptions.NoReverseMatch:
-
-Reverse for 'view-project' with keyword arguments '{'id': 2}' not found. 1 pattern(s) tried:
-['taskman/projects/(?P<pk>[0-9]+)/\\Z']
--->
 {% if project.completed_on == False %}
 <form method="POST" action="{% url 'complete-project' project.pk %}">
   {% csrf_token %}
