@@ -38,6 +38,7 @@ class Employee(models.Model):
     group_id = models.ForeignKey(Group, help_text='Assign to a team', on_delete=models.SET_NULL, null=True, blank=True)
     photo = models.ImageField(default='default.png', upload_to='profile_pics')
     team_role = models.ForeignKey(TeamRole, help_text='Assign a position', on_delete=models.SET_NULL, null=True, blank=True)
+    # Task number - skirtas skaiciuoti kiek uzduociu dabartiniu metu yra priskirta konkreciam Employee
     task_number = models.IntegerField('Number of tasks assigned', default=0, validators=[MaxValueValidator(10)])
 
     def __str__(self):
@@ -59,6 +60,7 @@ class TaskInstance(models.Model):
     description = models.TextField('Description', max_length=2000, help_text='Enter task description', null=True, blank=True)
     enddate = models.DateTimeField('Requested finish date', null=True, blank=True)
     completed_on = models.BooleanField('Completed', default=False)
+    # Nukreipia i konkretu Employee
     assign_employees = models.ForeignKey(Employee, help_text='Select employees to task', on_delete=models.CASCADE)
 
     def __str__(self):

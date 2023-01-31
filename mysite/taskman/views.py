@@ -275,7 +275,8 @@ class TaskInstanceDeleteView(LoginRequiredMixin, DeleteView):
         context['current_employee'] = current_employee
         return context
 
-    # Does not work
+    # Sita eilute turetu isfiltruoti assigned_employee, kuriam priskirtas TaskInstance. Tada, pakeisti task_number verte
+    # ja sumazindama -1. Taciau ivyksta tik trynimas, o pats task_number nesikeicia
     def delete(self, request, *args, **kwargs):
         task_instance = self.get_object()
         assigned_employee = task_instance.assign_employees
