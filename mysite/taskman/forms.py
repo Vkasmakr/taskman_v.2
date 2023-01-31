@@ -13,6 +13,13 @@ class ProjectCreateForm(forms.ModelForm):
         widgets = {'enddate': DateInput()}
 
 
+class ProjectUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ['title', 'description', 'group_id', 'employee_req', 'enddate']
+        widgets = {'enddate': DateInput()}
+
+
 class TaskCreateForm(forms.ModelForm):
     class Meta:
         model = TaskInstance

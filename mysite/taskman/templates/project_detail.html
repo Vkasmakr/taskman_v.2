@@ -31,8 +31,8 @@
     {% if project.completed_on == False %}
     <a class="button-cool" href="{% url 'task-new' %}">Create Task for Project</a>
     {%endif%}
-    <a class="button-cool" href="">Update Project</a>
-    <a class="button-cool" href="">Delete Project</a>
+    <a class="button-cool" href="{% url 'project-update' project.pk %}">Update Project</a>
+    <a class="button-cool" href="{% url 'project-delete' project.pk %}">Delete Project</a>
 </p>
 
 <!-- Cia yra forma, kuri isveda mygtuka, kurio paspaudimu pakeiciame completed_on i True

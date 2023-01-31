@@ -5,6 +5,7 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin, CreateView, UpdateView, DeleteView
 from .forms import TaskCommentForm, ProjectCommentForm, TaskCreateForm, ProjectCreateForm, TaskUpdateForm
+from .forms import ProjectUpdateForm
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 
@@ -200,23 +201,17 @@ class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         assign_employee = form.cleaned_data['assign_employees']  # gets the employee from list
         form.instance.assign_employees = assign_employee
+
+        # Zemiau kodas Neveikia :(
         project = form.cleaned_data['project_id']
         group = project.group_id
         form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
+        # Anksciau kodas Neveikia :(
+
         response = super().form_valid(form)
         self.object.assign_employees.task_number += 1
         self.object.assign_employees.save()
         return response
-
-    # def form_valid(self, form):
-    #     form.instance.assign_employees = Employee.objects.get(user=self.request.user)
-    #     project = form.cleaned_data['project_id']
-    #     group = project.group_id
-    #     form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
-    #     response = super().form_valid(form)
-    #     self.object.assign_employees.task_number += 1
-    #     self.object.assign_employees.save()
-    #     return response
 
 
 class TaskInstanceUpdateView(LoginRequiredMixin, UpdateView):
@@ -280,9 +275,30 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         context['current_employee'] = current_employee
         return context
 
-    def form_valid(self, form):
-        form.instance.assign_employees = Employee.objects.get(user=self.request.user)
-        return super().form_valid(form)
+
+class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+    model = Project
+    success_url = '/taskman/projects/'
+    template_name = 'project_create_form.html'
+    form_class = ProjectUpdateForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_employee = Employee.objects.get(user=self.request.user)
+        context['current_employee'] = current_employee
+        return context
+
+
+class ProjectDeleteView(LoginRequiredMixin, DeleteView):
+    model = Project
+    success_url = "/taskman/projects/"
+    template_name = 'project_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_employee = Employee.objects.get(user=self.request.user)
+        context['current_employee'] = current_employee
+        return context
 
 
 def index(request):
