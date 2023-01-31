@@ -156,8 +156,8 @@ class AllTaskCListView(LoginRequiredMixin, generic.ListView):
 
 
 class ProjectDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
-    model = Project  # automatiskai sukuriamas kintamasis Book -> book
-    template_name = 'project_detail.html'  # nurodome is kur ims apipavidalinima internete
+    model = Project
+    template_name = 'project_detail.html'
     form_class = ProjectCommentForm
 
     def get_context_data(self, **kwargs):
@@ -256,6 +256,7 @@ class TaskInstanceDeleteView(LoginRequiredMixin, DeleteView):
         context['current_employee'] = current_employee
         return context
 
+    # Does not work
     def delete(self, request, *args, **kwargs):
         task_instance = self.get_object()
         assigned_employee = task_instance.assign_employees
@@ -302,7 +303,9 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
         return context
 
 
+# Just an index page
 def index(request):
+    # lines required to restrict access to specific features or pages for Employee with low level roles
     if request.user.is_authenticated:
         current_employee = Employee.objects.get(user=request.user)
         context = {'current_employee': current_employee}
@@ -311,16 +314,22 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
+# Closes the project
 def project_done(request, pk):
     project = Project.objects.get(id=pk)
     if request.method == 'POST':
         project.completed_on = True
         project.save()
+        # Closes all tasks associated with the Project
+        tasks = TaskInstance.objects.filter(project_id=project)
+        for task in tasks:
+            task_done(request, task.id)
         return redirect('project-detail', pk=pk)
 
     return render(request, 'project_detail.html', {'project': project})
 
 
+# Re-opens the project
 def project_open(request, pk):
     project = Project.objects.get(id=pk)
     if request.method == 'POST':
@@ -331,10 +340,12 @@ def project_open(request, pk):
     return render(request, 'project_detail.html', {'project': project})
 
 
+# Closes the task
 def task_done(request, pk):
     task = TaskInstance.objects.get(id=pk)
     if request.method == 'POST':
         task.completed_on = True
+        # Substracts current work load value from assigned employee
         task.assign_employees.task_number = task.assign_employees.task_number - 1
         task.assign_employees.save()
         task.save()
@@ -343,10 +354,12 @@ def task_done(request, pk):
     return render(request, 'task_detail.html', {'task': task})
 
 
+# Opens the task
 def task_open(request, pk):
     task = TaskInstance.objects.get(id=pk)
     if request.method == 'POST':
         task.completed_on = False
+        # Adds work load value to assigned Employee
         task.assign_employees.task_number = task.assign_employees.task_number + 1
         task.assign_employees.save()
         task.save()
