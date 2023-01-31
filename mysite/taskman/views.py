@@ -8,10 +8,9 @@ from .forms import TaskCommentForm, ProjectCommentForm, TaskCreateForm, ProjectC
 from .forms import ProjectUpdateForm, UserUpdateForm, EmployeeUpdateForm
 from datetime import datetime
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
 
 
-# Create your views here.
+# Shows a list of Employees with their details
 class MyTeamListView(LoginRequiredMixin, generic.ListView):
     model = Employee
     paginate_by = 5
@@ -21,7 +20,8 @@ class MyTeamListView(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         current_employee = Employee.objects.get(user=self.request.user)
         context['current_employee'] = current_employee
-        # Thanks chat GPT
+
+        # Filter overdue_tasks
         employee_list = self.get_queryset()
         for employee in employee_list:
             tasks = TaskInstance.objects.filter(assign_employees=employee)
@@ -35,6 +35,7 @@ class MyTeamListView(LoginRequiredMixin, generic.ListView):
         return Employee.objects.filter(group_id=current_employee.group_id)
 
 
+# Shows list of TaskInstances for specific Employee
 class TaskListView(LoginRequiredMixin, generic.ListView):
     model = TaskInstance
     paginate_by = 5
@@ -47,17 +48,20 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
         context['has_assigned_tasks'] = self.get_queryset().filter(assign_employees__user=self.request.user).exists()
         return context
 
+    # Filters what will be shown
     def get_queryset(self):
         return TaskInstance.objects.filter(assign_employees__user=self.request.user).filter(
             project_id__completed_on=False) \
             .filter(completed_on=False)
 
 
+# Shows list of Project objects
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     paginate_by = 5
     template_name = 'project_list.html'
 
+    # filter what will be shown (open)
     def get_queryset(self):
         current_employee = Employee.objects.get(user=self.request.user)
         task_list = Project.objects.filter(group_id__id=current_employee.group_id.id).filter(completed_on=False)
@@ -70,11 +74,13 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
+# Shows list of Project objects
 class ProjectCListView(LoginRequiredMixin, generic.ListView):
     model = Project
     paginate_by = 5
     template_name = 'project_list_completed.html'
 
+    # filter what will be shown (closed)
     def get_queryset(self):
         current_employee = Employee.objects.get(user=self.request.user)
         task_list = Project.objects.filter(group_id__id=current_employee.group_id.id).filter(completed_on=True)
@@ -87,6 +93,7 @@ class ProjectCListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
+# Shows detailed view of specific TaskInstance object
 class TaskDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
     model = TaskInstance  # automatiskai sukuriamas kintamasis Book -> book
     template_name = 'task_detail.html'  # nurodome is kur ims apipavidalinima internete
@@ -101,9 +108,11 @@ class TaskDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
     def get_object(self):
         return TaskInstance.objects.get(pk=self.kwargs['pk'])
 
+    # 'refreshes' the page
     def get_success_url(self):
         return reverse('task-detail', kwargs={'pk': self.object.id})
 
+    # for posting comments
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
@@ -119,6 +128,7 @@ class TaskDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
         return super(TaskDetailView, self).form_valid(form)
 
 
+# get a list of object from TaskInstance
 class AllTaskListView(LoginRequiredMixin, generic.ListView):
     model = TaskInstance
     paginate_by = 5
@@ -130,6 +140,7 @@ class AllTaskListView(LoginRequiredMixin, generic.ListView):
         context['current_employee'] = current_employee
         return context
 
+    # filter what will be shown (open)
     def get_queryset(self):
         current_employee = Employee.objects.get(user=self.request.user)
         task_list = TaskInstance.objects.filter(project_id__group_id__id=current_employee.group_id.id).filter \
@@ -137,6 +148,7 @@ class AllTaskListView(LoginRequiredMixin, generic.ListView):
         return task_list
 
 
+# get a list of object from TaskInstance
 class AllTaskCListView(LoginRequiredMixin, generic.ListView):
     model = TaskInstance
     paginate_by = 5
@@ -148,6 +160,7 @@ class AllTaskCListView(LoginRequiredMixin, generic.ListView):
         context['current_employee'] = current_employee
         return context
 
+    # filter what will be shown (closed)
     def get_queryset(self):
         current_employee = Employee.objects.get(user=self.request.user)
         task_list = TaskInstance.objects.filter(project_id__group_id__id=current_employee.group_id.id) \
@@ -155,6 +168,7 @@ class AllTaskCListView(LoginRequiredMixin, generic.ListView):
         return task_list
 
 
+# returns a speicific object for detailed viewing
 class ProjectDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
     model = Project
     template_name = 'project_detail.html'
@@ -166,12 +180,15 @@ class ProjectDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
         context['current_employee'] = current_employee
         return context
 
+    # retrieve specific object
     def get_object(self):
         return Project.objects.get(pk=self.kwargs['pk'])
 
+    # "refresh" the page
     def get_success_url(self):
         return reverse('project-detail', kwargs={'pk': self.object.id})
 
+    # for posting comments
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
@@ -187,6 +204,7 @@ class ProjectDetailView(FormMixin, generic.DetailView, LoginRequiredMixin):
         return super(ProjectDetailView, self).form_valid(form)
 
 
+# Creates TaskInstance object
 class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
     model = TaskInstance
     success_url = '/taskman/alltasks/'
@@ -200,11 +218,9 @@ class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        # Zemiau kodas Neveikia :(
         project = form.cleaned_data['project_id']
         group = project.group_id
         form.fields['assign_employees'].queryset = Employee.objects.filter(group_id__id=group.id)
-        # Anksciau kodas Neveikia :(
 
         assign_employee = form.cleaned_data['assign_employees']  # gets the employee from list
         form.instance.assign_employees = assign_employee
@@ -215,6 +231,7 @@ class TaskInstanceCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
+# Updates specific TaskInstance object
 class TaskInstanceUpdateView(LoginRequiredMixin, UpdateView):
     model = TaskInstance
     success_url = '/taskman/alltasks/'
@@ -227,6 +244,7 @@ class TaskInstanceUpdateView(LoginRequiredMixin, UpdateView):
         context['current_employee'] = current_employee
         return context
 
+    # decrease work_load from previously assigned Employee to newly assigned
     def form_valid(self, form):
         form.instance.assign_employees = Employee.objects.get(user=self.request.user)
         project = form.cleaned_data['project_id']
@@ -245,6 +263,7 @@ class TaskInstanceUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+# Deletes TaskInstance object
 class TaskInstanceDeleteView(LoginRequiredMixin, DeleteView):
     model = TaskInstance
     success_url = "/taskman/alltasks/"
@@ -265,6 +284,7 @@ class TaskInstanceDeleteView(LoginRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
+# Creates a project
 class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
     success_url = '/taskman/projects/'
@@ -278,6 +298,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
+# Updates a project
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     model = Project
     success_url = '/taskman/projects/'
@@ -291,6 +312,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
+# Deletes a Project
 class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     model = Project
     success_url = "/taskman/projects/"
