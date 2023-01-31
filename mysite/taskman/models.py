@@ -6,7 +6,7 @@ from django.core.validators import MaxValueValidator
 from datetime import date
 
 
-# Creating a task model:
+# A model for Project
 class Project(models.Model):
     title = models.CharField('Project title', max_length=100, help_text='Enter project title')
     description = models.TextField('Description', max_length=2000, help_text='Enter project description')
@@ -24,7 +24,7 @@ class Project(models.Model):
         return reverse('project-detail', args=[str(self.id)])
 
 
-# Creating team roles:
+# A model for team roles. This will be used to determine what pages each user can access
 class TeamRole(models.Model):
     name = models.CharField('Role in a team', max_length=200, help_text='Enter Team role')
 
@@ -32,7 +32,7 @@ class TeamRole(models.Model):
         return self.name
 
 
-# Creating Employee model
+# A model for Employee
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     group_id = models.ForeignKey(Group, help_text='Assign to a team', on_delete=models.SET_NULL, null=True, blank=True)
@@ -44,6 +44,7 @@ class Employee(models.Model):
     def __str__(self):
         return f"Username: {self.user.username}\n / Team: {self.group_id.name} \n / Position: {self.team_role.name}"
 
+    # to adjust he size of uploaded profile pictures
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         img = Image.open(self.photo.path)
@@ -69,6 +70,7 @@ class TaskInstance(models.Model):
     def absolute_url(self):
         return reverse('task-detail', args=[str(self.id)])
 
+    # checking if task deadline are not overdue
     @property
     def is_overdue(self):
         if self.enddate and date.today() > self.enddate:
@@ -77,6 +79,7 @@ class TaskInstance(models.Model):
             return False
 
 
+# for comments in TaskInstance's detailed view
 class TaskComment(models.Model):
     task = models.ForeignKey(TaskInstance, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -84,6 +87,7 @@ class TaskComment(models.Model):
     content = models.TextField('Comment', max_length=2000)
 
 
+# for comments in Project's detailed view
 class ProjectComment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
