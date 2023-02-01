@@ -14,11 +14,11 @@ urlpatterns = [
     path('alltasksc/', views.AllTaskCListView.as_view(), name='all_tasks_c'),
     path('alltasks/<int:pk>/done', views.task_done, name='complete-task'),
     path('alltasks/<int:pk>/open', views.task_open, name='open-task'),
-    path('alltasks/<int:pk>/delete', views.TaskInstanceDeleteView.as_view(), name='delete-task'),
+
 
     path('alltasks/new', views.TaskInstanceCreateView.as_view(), name='task-new'),
-    path('projects/<int:pk>/update', views.TaskInstanceUpdateView.as_view(), name='task-update'),
-    path('projects/<int:pk>/delete', views.TaskInstanceDeleteView.as_view(), name='task-delete'),
+    path('alltasks/<int:pk>/update', views.TaskInstanceUpdateView.as_view(), name='task-update'),
+    path('alltasks/<int:pk>/delete', views.TaskInstanceDeleteView.as_view(), name='delete-task'),
 
     # general link to login/logout pages
     path('accounts/', include('django.contrib.auth.urls')),
